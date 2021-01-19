@@ -1,0 +1,25 @@
+name: Debuild
+on:
+  [push, pull_request]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "hello.deb.git/"
+      - name: Setup System
+        run: |
+          sudo apt install autoconf autopoint dpkg-dev debhelper-compat help2man
+          #sudo apt build-dep hello
+      - name: Build deb Package
+        working-directory: "hello.deb.git/"
+        run: |
+          autoreconf -f -i
+          dpkg-buildpackage -rfakeroot -uc -b
+      - name: Store deb Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: hello.deb
+          path: "*.deb"
